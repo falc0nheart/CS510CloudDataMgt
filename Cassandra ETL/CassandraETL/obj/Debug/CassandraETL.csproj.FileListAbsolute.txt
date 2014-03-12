@@ -1,0 +1,7 @@
+c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\bin\Debug\CassandraETL.exe.config
+c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\bin\Debug\CassandraETL.exe
+c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\bin\Debug\CassandraETL.pdb
+c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\bin\Debug\FluentCassandra.dll
+c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\obj\Debug\CassandraETL.csprojResolveAssemblyReference.cache
+c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\obj\Debug\CassandraETL.exe
+c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\obj\Debug\CassandraETL.pdb
