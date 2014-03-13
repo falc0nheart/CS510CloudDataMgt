@@ -5,3 +5,6 @@ c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\b
 c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\obj\Debug\CassandraETL.csprojResolveAssemblyReference.cache
 c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\obj\Debug\CassandraETL.exe
 c:\users\jotis\documents\visual studio 2013\Projects\CassandraETL\CassandraETL\obj\Debug\CassandraETL.pdb
+C:\Source\CloudDataProject\Cassandra ETL\CassandraETL\bin\Debug\CassandraETL.exe.config
+C:\Source\CloudDataProject\Cassandra ETL\CassandraETL\obj\Debug\CassandraETL.exe
+C:\Source\CloudDataProject\Cassandra ETL\CassandraETL\obj\Debug\CassandraETL.pdb

@@ -24,12 +24,19 @@ namespace CassandraETL
             var db = new CassandraContext(session);
             Console.WriteLine(db.Keyspace.KeyspaceName.ToString());
             Console.WriteLine("Time Started: " + DateTime.Now.ToString());
-            p.getHighwayStations(db);
-            //stations.CreateRecord()
-            //dynamic thisWorker = workers.CreateRecord(key: "11224224");
-            //dynamic workerDetail = thisWorker
-            //Console.WriteLine(db.DescribeClusterName());
+            p.insertHighwayStations(db);
+            p.InsertStationLoops(db);
 
+
+            Console.WriteLine("Time Finished: " + DateTime.Now.ToString());
+          
+            
+            Console.Read();
+        }
+
+
+        private void InsertStationLoops(CassandraContext db)
+        {
 
             DataTable detectors = GetDataTableFromCsv("c:\\incoming\\freeway_detectors.csv", true);
 
@@ -82,7 +89,7 @@ namespace CassandraETL
                                     StartTime = table2.StartTime,
                                     StartHour = table2.StartHour,
                                     StartMinute = table2.StartMinute,
-                                    StartSecond= table2.StartSecond,
+                                    StartSecond = table2.StartSecond,
                                     DayOfWeek = table2.DayOfWeek,
                                     Volume = table2.Volume,
                                     Speed = table2.Speed
@@ -96,80 +103,7 @@ namespace CassandraETL
 
                 db.ExecuteNonQuery(query);
             }
-
-
-
-
-            Console.WriteLine("Time Finished: " + DateTime.Now.ToString());
           
-            
-            Console.Read();
-        }
-
-
-        private void dealWithStationLoops()
-        {
-
-
-            DataTable detectors = GetDataTableFromCsv("c:\\incoming\\freeway_detectors.csv", true);
-
-
-            string file_name = "c:\\incoming\\freeway_loopdata.csv";
-            List<LoopData> loop = new List<LoopData>();
-            int rowcount = 0;
-            int batchCout = 0;
-            int batchSize = 1000;
-            using (StreamReader reader = new StreamReader(file_name))
-            {
-                string line = null;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    String[] thisRow = line.Split(',');
-                    //If speed is not null and this isn't the column header row. 
-                    if (thisRow[3] != "speed" && thisRow[3] != "")
-                    {
-
-                        LoopData thisReading = new LoopData();
-                        thisReading.DetectorID = int.Parse(thisRow[0]);
-                        thisReading.Speed = int.Parse(thisRow[3]);
-                        thisReading.Volume = int.Parse(thisRow[2]);
-
-                        DateTime thisDate = DateTime.Parse(thisRow[1]);
-                        thisReading.StartHour = (byte)thisDate.Hour;
-                        thisReading.StartTime = thisDate.TimeOfDay.ToString();
-                        thisReading.StartDate = thisDate.Date.ToShortDateString();
-                        thisReading.DayOfWeek = getDayAbbrev(thisDate.DayOfWeek);
-                        loop.Add(thisReading);
-
-                        //Console.WriteLine(loop.Count.ToString());
-
-                    }
-
-
-                }
-            }
-
-            var LoopDetectors = from table1 in detectors.AsEnumerable()
-                                join table2 in loop.AsEnumerable() on (int)table1["detectorid"] equals table2.DetectorID
-                                select new
-                                {
-                                    StationID = (int)table1["stationid"],
-                                    DetectorID = (int)table1["detectorid"],
-                                    HighwayID = (int)table1["highwayid"],
-                                    StartDate = table2.StartDate,
-                                    StartTime = table2.StartTime,
-                                    StartHour = table2.StartHour,
-                                    DayOfWeek = table2.DayOfWeek,
-                                    Volume = table2.Volume,
-                                    Speed = table2.Speed
-                                };
-
-
-            foreach (var item in LoopDetectors)
-            {
-
-
-            }
 
         }
         private static string getDayAbbrev(DayOfWeek theDay)
@@ -191,7 +125,7 @@ namespace CassandraETL
             else return null;
         }
 
-        public void getHighwayStations(CassandraContext db) {
+        public void insertHighwayStations(CassandraContext db) {
 
             DataTable Highway = GetDataTableFromCsv("c:\\incoming\\highways.csv", true);
             DataTable Stations = GetDataTableFromCsv("c:\\incoming\\freeway_stations.csv", true, "stationclass = 1");
