@@ -10,6 +10,7 @@ import static me.prettyprint.hector.api.factory.HFactory.createMutator;
 import static me.prettyprint.hector.api.factory.HFactory.getOrCreateCluster;
 
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.serializers.IntegerSerializer;
 import me.prettyprint.cassandra.service.template.ColumnFamilyTemplate;
 import me.prettyprint.hector.api.Cluster;
 import me.prettyprint.hector.api.Keyspace;
@@ -27,12 +28,13 @@ import me.prettyprint.hector.api.beans.Rows;
 
 public class CloudDataMgtCassandraQueries {
 	
-  private final static String KEYSPACE = "CloudDataMgt";
+  private final static String KEYSPACE = "cloudDataMgtTake2";
   private final static String HOST_PORT = "54.186.36.251:9160";
-  private final static String CF_NAME = "Stations";
+  private final static String CF_NAME = "stations";
   /** Column name where values are stored */
-  private final static String COLUMN_NAME = "LocationText";
+  private final static String COLUMN_NAME = "locationtext";
   private final StringSerializer serializer = StringSerializer.get();
+  private final IntegerSerializer intSerializer = IntegerSerializer.get();
   private Keyspace keyspace;
 
   public static void main(String[] args) throws HectorException {
@@ -40,7 +42,9 @@ public class CloudDataMgtCassandraQueries {
     CloudDataMgtCassandraQueries ed = new CloudDataMgtCassandraQueries(HFactory.createKeyspace(KEYSPACE, c));
     //ed.insert("key1", "value1", StringSerializer.get());
 
-    System.out.println(ed.get("1048", StringSerializer.get()));
+    //System.out.println(ed.get("key1", StringSerializer.get()));
+    //System.out.println(ed.get(new Integer(1048), IntegerSerializer.get()));
+    System.out.println(ed.get("1052", StringSerializer.get()));
   }
   
   public CloudDataMgtCassandraQueries(Keyspace keyspace) {
@@ -57,6 +61,17 @@ public class CloudDataMgtCassandraQueries {
     return c == null ? null : c.getValue();
   }
 	  
+//  public String get(final Integer key, Serializer<Integer> intSerializer) throws HectorException {
+//    ColumnQuery<Integer, String, String> q = HFactory.createColumnQuery(keyspace,
+//        intSerializer, serializer, serializer);
+//    QueryResult<HColumn<String, String>> r = q.setKey(key).
+//        setName(COLUMN_NAME).
+//        setColumnFamily(CF_NAME).
+//        execute();
+//    HColumn<String, String> c = r.get();
+//    return c != null ? c.getValue() : null;
+//  }
+  
 //		Cluster myCluster = HFactory.getOrCreateCluster("CloudDataMgtCluster","54.186.36.251:9160");
 //		System.out.println("cluster name:  " + myCluster.describeClusterName());
 //		
