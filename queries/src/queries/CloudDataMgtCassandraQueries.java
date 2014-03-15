@@ -11,9 +11,10 @@ public class CloudDataMgtCassandraQueries {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		//Cluster cluster = HFactory.createCluster("TestCluster",  new CassandraHostConfigurator("localhost:9160"));
-		Cluster myCluster = HFactory.getOrCreateCluster("CloudDataMgtCluster","54.186.36.251:9042");
+		Cluster myCluster = HFactory.getOrCreateCluster("CloudDataMgtCluster","54.186.36.251:9160");
 //		KeyspaceDefinition keyspaceDef = myCluster.describeKeyspace("CloudDataMgt");
 		Keyspace ksp = HFactory.createKeyspace("CloudDataMgt", myCluster);
+		System.out.println(myCluster.describeClusterName());
 		
 //		try {
 //	    ColumnFamilyResult<String, String> res = template.queryColumns("a key");
