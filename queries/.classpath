@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="jars/hector-core-1.1-4-javadoc.jar"/>
-	<classpathentry kind="lib" path="jars/hector-core-1.1-4-sources.jar"/>
-	<classpathentry kind="lib" path="jars/hector-core-1.1-4-tests.jar"/>
-	<classpathentry kind="lib" path="jars/hector-core-1.1-4.jar"/>
-	<classpathentry kind="lib" path="jars/libthrift-0.8.0.jar"/>
-	<classpathentry kind="lib" path="jars/cassandra-thrift-1.1.0.jar"/>
-	<classpathentry kind="lib" path="jars/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="jars/commons-pool-1.5.3.jar"/>
-	<classpathentry kind="lib" path="jars/FastInfoset-1.2.2.jar"/>
-	<classpathentry kind="lib" path="jars/guava-r09.jar"/>
-	<classpathentry kind="lib" path="jars/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="jars/speed4j-0.9.jar"/>
-	<classpathentry kind="lib" path="jars/uuid-3.2.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="jars/slf4j-simple-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/hector-core-1.1-4-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/hector-core-1.1-4-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/hector-core-1.1-4-tests.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/hector-core-1.1-4.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/libthrift-0.8.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/cassandra-thrift-1.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/commons-lang-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/commons-pool-1.5.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/FastInfoset-1.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/guava-r09.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/slf4j-api-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/speed4j-0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="jars/uuid-3.2.0.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry exported="true" kind="lib" path="jars/slf4j-simple-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
