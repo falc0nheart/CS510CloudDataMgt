@@ -1,0 +1,34 @@
+README:
+<updated 2014.03.15>
+
+These steps should guide you upon setting up the DataStax Java Driver 
+to work successfully with Eclipse.
+
+1. Install Eclipse (used: KEPLER SR2)
+2. We need to install Maven within Eclipse
+	- Go to Help > Eclipse Marketplace
+	- Search for 'maven'
+	- Install Maven 0.11 (by Nodeclipse)
+	- Restart IDE
+3. Create new Maven Project (need group-id and artifact-id, chosen: cass-driver2)
+4. Edit 'pom.xml' to include:
+
+<dependency>
+  	  <groupId>com.datastax.cassandra</groupId>
+  	  <artifactId>cassandra-driver-core</artifactId>
+ 	  <version>2.0.1</version>
+</dependency>
+	
+This should be placed within the <dependencies> element, under the junit. (Already in GIT)
+
+5. Upon insertion, you should be able to Run As Java Application.*
+
+* Errors:
+
+Consistently receive the following errors:
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+
+They do not affect the Cassandra Driver portion, as those are called regardless. I am
+still troubleshooting the root cause of this.
