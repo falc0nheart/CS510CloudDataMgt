@@ -24,9 +24,10 @@ public class App
 //    			" password varchar " + 
 //    			");";
 //    	session.execute(cqlStatement2);
+   
     	
-    	String cqlStatement3 = "SELECT * FROM sandboxalex.books;";
-    	System.out.println(session.execute(cqlStatement3));
+    	String cqlStatement3 = "SELECT * FROM \"CloudDataMgt\".\"Stations\" LIMIT 5;";
+    	System.out.println(session.execute(cqlStatement3).one());
     	System.out.println("Done");
     	System.exit(0);
     }
