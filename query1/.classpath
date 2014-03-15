@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="/home/peter/Documents/projects/cs_410/hector/object-mapper/target/hector-object-mapper-3.1-10-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/home/peter/Documents/projects/cs_410/hector/core/target/hector-core-1.1-5-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/home/peter/Documents/projects/cs_410/hector/target/hector-1.1-5-SNAPSHOT-tests.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
