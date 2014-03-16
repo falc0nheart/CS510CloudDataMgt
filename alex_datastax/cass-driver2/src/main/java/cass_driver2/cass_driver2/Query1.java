@@ -31,21 +31,27 @@ public class Query1 {
                 int fiveMinInterval = (row2.getInt(0) * 12) + row2.getInt(1)/ 5;
                 // put Speed into HashMap based on 5-minute interval
                 List<Integer> waitwait = intervalMap.get(fiveMinInterval);
+               
                 waitwait.add(row2.getInt(2));
                 intervalMap.put(fiveMinInterval, waitwait);
+                
             } // for
             // for loop - getting average of intervalMap
             for(int keyNotAList : intervalMap.keySet()) {
                 List<Integer> waitwait2 = intervalMap.get(keyNotAList);
+                if(!waitwait2.isEmpty())
+                {
                 int speedSum = 0;
                 for (int i = 0; i < waitwait2.size(); i++) {
                     speedSum += waitwait2.get(i);
                 }
                 newThing.put(keyNotAList, (float) speedSum / waitwait2.size());
+              }
             } // for
             // Actually do average, cuz we lied before
             for(int keyValue : newThing.keySet()){
-                float travelTime = (float) row.getDouble(1) / newThing.get(keyValue);
+                float travelTime = (float) (row.getDouble(1) / newThing.get(keyValue));
+               
                 System.out.println ("Station: " + row.getInt(0) + " TRAVEL: " + travelTime);
             } // for
         } // for
