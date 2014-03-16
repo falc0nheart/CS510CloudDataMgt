@@ -31,75 +31,25 @@ public class Query3 {
 		// Query "LoopData" columnFamily, for each relevant (NB) StationID.
 		List<List<Row>> loopDataFilteredList = new ArrayList<List<Row>>(6);
 		List<Row> newList;
-		List<Row> listRow;
+		HashMap<FourTuple, List<Row>> newMap;
+		FourTuple timeSignature;
+		HashMap<FourTuple, List<Row>> timeSigValueMap;
+		List<Row> timeSigRowList;
 		for (int rushHour = 0; rushHour < 6; rushHour++) {
 			newList = new ArrayList<Row>();
 			loopDataFilteredList.add(rushHour, newList);
 		}
-
-		//		// Query rows for specific rush hours and days of week, and create a List of 6 Lists
-		//		// holding all of the rush-hour/day-of-week combinations.
-		//		for (Row stationRow : stationID_lengthMidList) {
-		//			String cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
-		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 7 AND \"StartHour\" < 9 LIMIT 100000;";
-		//			ResultSet loopDataResults = session.execute(cqlQueryLoopData);
-		//			for (Row row : loopDataResults) {
-		//				listRow = loopDataFilteredList.remove(0);
-		//				listRow.add(row);
-		//				loopDataFilteredList.add(0, listRow);
-		//			}
-		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
-		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 7 AND \"StartHour\" < 9 LIMIT 100000;";
-		//			loopDataResults = session.execute(cqlQueryLoopData);
-		//			for (Row row : loopDataResults) {
-		//				listRow = loopDataFilteredList.remove(1);
-		//				listRow.add(row);
-		//				loopDataFilteredList.add(1, listRow);
-		//			}
-		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
-		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 7 AND \"StartHour\" < 9 LIMIT 100000;";
-		//			loopDataResults = session.execute(cqlQueryLoopData);
-		//			for (Row row : loopDataResults) {
-		//				listRow = loopDataFilteredList.remove(2);
-		//				listRow.add(row);
-		//				loopDataFilteredList.add(2, listRow);
-		//			}
-		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
-		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 16 AND \"StartHour\" < 18 LIMIT 100000;";
-		//			loopDataResults = session.execute(cqlQueryLoopData);
-		//			for (Row row : loopDataResults) {
-		//				listRow = loopDataFilteredList.remove(3);
-		//				listRow.add(row);
-		//				loopDataFilteredList.add(3, listRow);
-		//			}
-		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
-		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 16 AND \"StartHour\" < 18 LIMIT 100000;";
-		//			loopDataResults = session.execute(cqlQueryLoopData);
-		//			for (Row row : loopDataResults) {
-		//				listRow = loopDataFilteredList.remove(4);
-		//				listRow.add(row);
-		//				loopDataFilteredList.add(4, listRow);
-		//			}
-		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
-		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 16 AND \"StartHour\" < 18 LIMIT 100000;";
-		//			loopDataResults = session.execute(cqlQueryLoopData);
-		//			for (Row row : loopDataResults) {
-		//				listRow = loopDataFilteredList.remove(5);
-		//				listRow.add(row);
-		//				loopDataFilteredList.add(5, listRow);
-		//			}
-		//		}
+		List<HashMap<FourTuple, List<Row>>> loopDataMapList = new ArrayList<HashMap<FourTuple, List<Row>>>(6);
+		for (int rushHour = 0; rushHour < 6; rushHour++) {
+			newMap = new HashMap<FourTuple, List<Row>>();
+			loopDataMapList.add(rushHour, newMap);
+		}
+		Map<FourTuple, Double> travelTimesMap;
 
 		for (Row stationRow : stationID_lengthMidList) {
 			String cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
 					+ " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-					+ stationRow.getInt(0) + " LIMIT 1000000;";
+					+ stationRow.getInt(0) + " LIMIT 100000;";
 			ResultSet loopDataResults = session.execute(cqlQueryLoopData);
 
 			// Filter rows for specific rush hours (AM/PM and day of week), and create a List of 6 Lists
@@ -107,36 +57,66 @@ public class Query3 {
 			for (Row row : loopDataResults) {
 				if (row.getInt(1) >= 7 && row.getInt(1) < 9) {
 					if (row.getString(3).equals("Tuesday")) {
-						listRow = loopDataFilteredList.remove(0);
-						listRow.add(row);
-						loopDataFilteredList.add(0, listRow);
+						timeSignature = new FourTuple(row.getInt(1), row.getInt(2), row.getInt(5), row.getDate(6).toString());
+						timeSigValueMap = loopDataMapList.remove(0);
+						timeSigRowList = timeSigValueMap.get(timeSignature);
+						if (timeSigRowList == null)
+							timeSigRowList = new ArrayList<Row>();
+						timeSigRowList.add(row);
+						timeSigValueMap.put(timeSignature, timeSigRowList);
+						loopDataMapList.add(0, timeSigValueMap);
 					}
 					else if (row.getString(3).equals("Wednesday")) {
-						listRow = loopDataFilteredList.remove(1);
-						listRow.add(row);
-						loopDataFilteredList.add(1, listRow);
+						timeSignature = new FourTuple(row.getInt(1), row.getInt(2), row.getInt(5), row.getDate(6).toString());
+						timeSigValueMap = loopDataMapList.remove(1);
+						timeSigRowList = timeSigValueMap.get(timeSignature);
+						if (timeSigRowList == null)
+							timeSigRowList = new ArrayList<Row>();
+						timeSigRowList.add(row);
+						timeSigValueMap.put(timeSignature, timeSigRowList);
+						loopDataMapList.add(1, timeSigValueMap);
 					}
 					else if (row.getString(3).equals("Thursday")) {
-						listRow = loopDataFilteredList.remove(2);
-						listRow.add(row);
-						loopDataFilteredList.add(2, listRow);
+						timeSignature = new FourTuple(row.getInt(1), row.getInt(2), row.getInt(5), row.getDate(6).toString());
+						timeSigValueMap = loopDataMapList.remove(2);
+						timeSigRowList = timeSigValueMap.get(timeSignature);
+						if (timeSigRowList == null)
+							timeSigRowList = new ArrayList<Row>();
+						timeSigRowList.add(row);
+						timeSigValueMap.put(timeSignature, timeSigRowList);
+						loopDataMapList.add(2, timeSigValueMap);
 					}
 				}
 				else if (row.getInt(1) >= 16 && row.getInt(1) < 18) {
 					if (row.getString(3).equals("Tuesday")) {
-						listRow = loopDataFilteredList.remove(3);
-						listRow.add(row);
-						loopDataFilteredList.add(3, listRow);
+						timeSignature = new FourTuple(row.getInt(1), row.getInt(2), row.getInt(5), row.getDate(6).toString());
+						timeSigValueMap = loopDataMapList.remove(3);
+						timeSigRowList = timeSigValueMap.get(timeSignature);
+						if (timeSigRowList == null)
+							timeSigRowList = new ArrayList<Row>();
+						timeSigRowList.add(row);
+						timeSigValueMap.put(timeSignature, timeSigRowList);
+						loopDataMapList.add(3, timeSigValueMap);
 					}
 					else if (row.getString(3).equals("Wednesday")) {
-						listRow = loopDataFilteredList.remove(4);
-						listRow.add(row);
-						loopDataFilteredList.add(4, listRow);
+						timeSignature = new FourTuple(row.getInt(1), row.getInt(2), row.getInt(5), row.getDate(6).toString());
+						timeSigValueMap = loopDataMapList.remove(4);
+						timeSigRowList = timeSigValueMap.get(timeSignature);
+						if (timeSigRowList == null)
+							timeSigRowList = new ArrayList<Row>();
+						timeSigRowList.add(row);
+						timeSigValueMap.put(timeSignature, timeSigRowList);
+						loopDataMapList.add(4, timeSigValueMap);
 					}
 					else if (row.getString(3).equals("Thursday")) {
-						listRow = loopDataFilteredList.remove(5);
-						listRow.add(row);
-						loopDataFilteredList.add(5, listRow);
+						timeSignature = new FourTuple(row.getInt(1), row.getInt(2), row.getInt(5), row.getDate(6).toString());
+						timeSigValueMap = loopDataMapList.remove(5);
+						timeSigRowList = timeSigValueMap.get(timeSignature);
+						if (timeSigRowList == null)
+							timeSigRowList = new ArrayList<Row>();
+						timeSigRowList.add(row);
+						timeSigValueMap.put(timeSignature, timeSigRowList);
+						loopDataMapList.add(5, timeSigValueMap);
 					}
 				}
 			}
@@ -146,22 +126,32 @@ public class Query3 {
 		List<Double> avgTravelTimes = new ArrayList<Double>(6);
 		Double periodTravelTimeSum;
 		Integer periodTravelTimeCount;
+		Double instantTravelTimeSum;
+		HashMap<FourTuple, List<Row>> periodMap;
 		int periodRowStationID;
 		for (int rushHour = 0; rushHour < 6; rushHour++) {
 			periodTravelTimeSum = 0.0;
 			periodTravelTimeCount = 0;
-			for (Row rushHourRow : loopDataFilteredList.get(rushHour)) {
-				periodRowStationID = rushHourRow.getInt(0);
-				for (Row stationRow : stationID_lengthMidList) {
-					// Find the corresponding LengthMid in the stationID list
-					if (stationRow.getInt(0) == periodRowStationID) {
-						if (rushHourRow.getInt(4) != 0) {
-							periodTravelTimeSum += (stationRow.getDouble(1) / (double)rushHourRow.getInt(4));
-							periodTravelTimeCount += 1;
+  		periodMap = loopDataMapList.get(rushHour);
+			for (Map.Entry<FourTuple, List<Row>> mapEntry : periodMap.entrySet()) {
+				instantTravelTimeSum = 0.0;  /////
+				travelTimesMap = new HashMap<FourTuple, Double>();////
+				for (Row rushHourRow : mapEntry.getValue()) {
+					periodRowStationID = rushHourRow.getInt(0);
+					for (Row stationRow : stationID_lengthMidList) {
+						// Find the corresponding LengthMid in the stationID list
+						if (stationRow.getInt(0) == periodRowStationID) {
+							if (rushHourRow.getInt(4) != 0) {
+								instantTravelTimeSum += (stationRow.getDouble(1) / (double)rushHourRow.getInt(4));
+								/////travelTimesMap.get(mapEntry.getKey());
+							}
+							break;
 						}
-						break;
 					}
 				}
+				travelTimesMap.put(mapEntry.getKey(), instantTravelTimeSum);////
+			  periodTravelTimeSum += (travelTimesMap.get(mapEntry.getKey()));////
+				periodTravelTimeCount += 1;////
 			}
 			if (periodTravelTimeCount != 0)
 				avgTravelTimes.add(rushHour, periodTravelTimeSum / (double)periodTravelTimeCount);
@@ -199,40 +189,40 @@ public class Query3 {
 				+ " WHERE \"ShortDirection\" = 'N' LIMIT 1000000000;";
 		return session.execute(cqlQueryStations);
 	}
-	
-	private class FourTuple {
+
+	private static class FourTuple {
 		private int hour, minute, second;
 		String ts;
-		
+
 		FourTuple(int hour, int minute, int second, String ts) {
 			this.hour = hour;
 			this.minute = minute;
 			this.second = second;
 			this.ts = ts;
 		}
-		
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof FourTuple)) return false;
-        FourTuple fourTuple = (FourTuple) o;
-        return hour == fourTuple.hour && minute == fourTuple.minute && second == fourTuple.second && ts == fourTuple.ts;
-    }
 
-    @Override
-    public int hashCode() {
-        int result = hour;
-        result = result * 5000 + 60 * minute + second;
-        int monthDate = Integer.parseInt(ts.substring(9, 10));
-        result = result + 150000 + monthDate;
-        if (ts.substring(5, 7).equals("Sep"))
-        	result *= 2;
-        else if (ts.substring(5, 7).equals("Oct"))
-        	result *= 3;
-        else
-        	result *= 5;
-        return result;
-    }
-		
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof FourTuple)) return false;
+			FourTuple fourTuple = (FourTuple) o;
+			return hour == fourTuple.hour && minute == fourTuple.minute && second == fourTuple.second && ts == fourTuple.ts;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = hour;
+			result = result * 5000 + 60 * minute + second;
+			int monthDate = Integer.parseInt(ts.substring(9, 10));
+			result = result + 150000 + monthDate;
+			if (ts.substring(5, 7).equals("Sep"))
+				result *= 2;
+			else if (ts.substring(5, 7).equals("Oct"))
+				result *= 3;
+			else
+				result *= 5;
+			return result;
+		}
+
 	}
 }
