@@ -14,39 +14,77 @@ namespace CassandraETL
 {
     class Program
     {
+        private string HighwayPath = "c:\\incoming\\highways.csv";
+        private string StationPath = "c:\\incoming\\freeway_stations.csv";
+        private string DetectorPath = "c:\\incoming\\freeway_detectors.csv";
+        private string LoopPath = "c:\\incoming\\freeway_loopdata.csv";
         static void Main(string[] args)
         {
             Program p = new Program();
 
-            FluentCassandra.Connections.Server svr = new FluentCassandra.Connections.Server("54.186.36.251");
-           
-            FluentCassandra.CassandraSession session = new CassandraSession("CloudDataMgt",svr);
+            //Create database context and connect to Keyspace
+            FluentCassandra.Connections.Server svr = new FluentCassandra.Connections.Server(Properties.Settings.Default.CassandraIP);
+            FluentCassandra.CassandraSession session = new CassandraSession(Properties.Settings.Default.KeySpace,svr);
             var db = new CassandraContext(session);
-            Console.WriteLine(db.Keyspace.KeyspaceName.ToString());
+
             Console.WriteLine("Time Started: " + DateTime.Now.ToString());
+            
+            //INSERT DATA!!!
             p.insertHighwayStations(db);
             p.InsertStationLoops(db);
 
-
-            Console.WriteLine("Time Finished: " + DateTime.Now.ToString());
-          
-            
+            Console.WriteLine("Time Finished: " + DateTime.Now.ToString());   
             Console.Read();
         }
 
-
+        /// <summary>
+        /// Inserts data into LoopData column family 
+        /// </summary>
+        /// <param name="db">Cassandra database context</param>
         private void InsertStationLoops(CassandraContext db)
         {
+            //Read in detectors
+            DataTable detectors = GetDataTableFromCsv(DetectorPath, true);
+            //Read in loop data
+            List<LoopData> loop = getLoopData();
 
-            DataTable detectors = GetDataTableFromCsv("c:\\incoming\\freeway_detectors.csv", true);
+            //Join the loops and detectors
+            var LoopDetectors = from table1 in detectors.AsEnumerable()
+                                join table2 in loop.AsEnumerable() on (int)table1["detectorid"] equals table2.DetectorID
+                                select new
+                                {
+                                    StationID = (int)table1["stationid"],
+                                    DetectorID = (int)table1["detectorid"],
+                                    HighwayID = (int)table1["highwayid"],
+                                    StartDate = table2.StartDate,
+                                    StartTime = table2.StartTime,
+                                    StartHour = table2.StartHour,
+                                    StartMinute = table2.StartMinute,
+                                    StartSecond = table2.StartSecond,
+                                    DayOfWeek = table2.DayOfWeek,
+                                    Volume = table2.Volume,
+                                    Speed = table2.Speed
+                                };
 
+            //foreach record, insert into cassandra
+            foreach (var item in LoopDetectors)
+            {
+                string query = "INSERT INTO \"" + Properties.Settings.Default.KeySpace + "\".\"LoopData\" ( \"StationID\",\"HighwayID\",\"DetectorID\", \"StartDate\",\"StartTime\",\"StartHour\",\"DayOfWeek\",\"Volume\",\"Speed\",\"StartMinute\",\"StartSecond\") ";
+                query += "VALUES( " + item.StationID.ToString() + ", " + item.HighwayID.ToString() + ", " + item.DetectorID.ToString() + ", '" + item.StartDate + "', '" + item.StartTime + "', " + item.StartHour + ", '" + item.DayOfWeek + "'," + item.Volume + "," + item.Speed + "," + item.StartMinute + "," + item.StartSecond + ")";
 
-            string file_name = "c:\\incoming\\freeway_loopdata.csv";
+                db.ExecuteNonQuery(query);
+            }
+        }
+
+        /// <summary>
+        /// Gets loop data fro CSV file
+        /// </summary>
+        /// <returns>returns List of LoopData objects read from CSV file</returns>
+        private List<LoopData> getLoopData() 
+        {
             List<LoopData> loop = new List<LoopData>();
-            int rowcount = 0;
-            int batchCout = 0;
-            int batchSize = 1000;
-            using (StreamReader reader = new StreamReader(file_name))
+
+            using (StreamReader reader = new StreamReader(LoopPath))
             {
                 string line = null;
                 while ((line = reader.ReadLine()) != null)
@@ -70,42 +108,18 @@ namespace CassandraETL
                         thisReading.DayOfWeek = getDayAbbrev(thisDate.DayOfWeek);
                         loop.Add(thisReading);
 
-                        //Console.WriteLine(loop.Count.ToString());
-
                     }
-
-
                 }
             }
 
-            var LoopDetectors = from table1 in detectors.AsEnumerable()
-                                join table2 in loop.AsEnumerable() on (int)table1["detectorid"] equals table2.DetectorID
-                                select new
-                                {
-                                    StationID = (int)table1["stationid"],
-                                    DetectorID = (int)table1["detectorid"],
-                                    HighwayID = (int)table1["highwayid"],
-                                    StartDate = table2.StartDate,
-                                    StartTime = table2.StartTime,
-                                    StartHour = table2.StartHour,
-                                    StartMinute = table2.StartMinute,
-                                    StartSecond = table2.StartSecond,
-                                    DayOfWeek = table2.DayOfWeek,
-                                    Volume = table2.Volume,
-                                    Speed = table2.Speed
-                                };
-
-
-            foreach (var item in LoopDetectors)
-            {
-                string query = "INSERT INTO \"CloudDataMgt\".\"LoopData\" ( \"StationID\",\"HighwayID\",\"DetectorID\", \"StartDate\",\"StartTime\",\"StartHour\",\"DayOfWeek\",\"Volume\",\"Speed\",\"StartMinute\",\"StartSecond\") ";
-                query += "VALUES( " + item.StationID.ToString() + ", " + item.HighwayID.ToString() + ", " + item.DetectorID.ToString() + ", '" + item.StartDate + "', '" + item.StartTime + "', " + item.StartHour + ", '" + item.DayOfWeek + "'," + item.Volume + "," + item.Speed + "," + item.StartMinute + "," + item.StartSecond + ")";
-
-                db.ExecuteNonQuery(query);
-            }
-          
-
+            return loop;
+        
         }
+        /// <summary>
+        /// Resolves day of week enumeration into textual representation
+        /// </summary>
+        /// <param name="theDay">enumeration of DayOfWeek</param>
+        /// <returns>textual representation of the day of week.</returns>
         private static string getDayAbbrev(DayOfWeek theDay)
         {
             if (theDay == DayOfWeek.Friday)
@@ -127,10 +141,12 @@ namespace CassandraETL
 
         public void insertHighwayStations(CassandraContext db) {
 
-            DataTable Highway = GetDataTableFromCsv("c:\\incoming\\highways.csv", true);
-            DataTable Stations = GetDataTableFromCsv("c:\\incoming\\freeway_stations.csv", true, "stationclass = 1");
+            //Get highway data
+            DataTable Highway = GetDataTableFromCsv(HighwayPath, true);
+            //Get station data
+            DataTable Stations = GetDataTableFromCsv(StationPath, true, "stationclass = 1");
 
-
+            //Join highways and stations
             var HighwayStations = from table1 in Highway.AsEnumerable()
                                   join table2 in Stations.AsEnumerable() on (int)table1["highwayid"] equals (int)table2["highwayid"]
                                   select new
@@ -143,19 +159,14 @@ namespace CassandraETL
                                       ShortDirection = (string)table1["shortdirection"],
                                       HighwayName = (string)table1["highwayname"]
                                   };
-
-
-            var stations = db.GetColumnFamily("Stations");
-
+            //For each tuple resulting from the join, insert into cassandra. 
             foreach (var item in HighwayStations)
             {
-                string query = "INSERT INTO \"CloudDataMgt\".\"Stations\" ( \"StationID\",\"HighwayID\",\"DownstreamStationID\", \"LocationText\",\"LengthMid\",\"ShortDirection\",\"HighwayName\") ";
+                string query = "INSERT INTO \"" +  Properties.Settings.Default.KeySpace  + "\".\"Stations\" ( \"StationID\",\"HighwayID\",\"DownstreamStationID\", \"LocationText\",\"LengthMid\",\"ShortDirection\",\"HighwayName\") ";
                 query += "VALUES( " + item.StationID.ToString() + ", " + item.HighwayID.ToString() + ", " + item.DownstreamStationID.ToString() + ", '" + item.LocationText + "', " + item.LengthMid.ToString() + ", '" + item.ShortDirection + "', '" + item.HighwayName + "');";
-
 
                 db.ExecuteNonQuery(query);
             }
-        
         }
 
 
@@ -165,9 +176,11 @@ namespace CassandraETL
 
             string pathOnly = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);
-
-            string sql = @"SELECT * FROM [" + fileName + "] WHERE " + filter ;
-
+            string sql = @"SELECT * FROM [" + fileName + "]";
+            if (filter != null)
+            {
+               sql = sql + " WHERE " + filter;
+            }
             using (OleDbConnection connection = new OleDbConnection(
                       @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + pathOnly +
                       ";Extended Properties=\"Text;HDR=" + header + "\""))
@@ -182,25 +195,8 @@ namespace CassandraETL
         }
         static DataTable GetDataTableFromCsv(string path, bool isFirstRowHeader)
         {
-            string header = isFirstRowHeader ? "Yes" : "No";
 
-            string pathOnly = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-
-            string sql = @"SELECT * FROM [" + fileName + "]";
-
-            using (OleDbConnection connection = new OleDbConnection(
-                      @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + pathOnly +
-                      ";Extended Properties=\"Text;HDR=" + header + "\""))
-            using (OleDbCommand command = new OleDbCommand(sql, connection))
-            using (OleDbDataAdapter adapter = new OleDbDataAdapter(command))
-            {
-                DataTable dataTable = new DataTable();
-                dataTable.Locale = CultureInfo.CurrentCulture;
-                adapter.Fill(dataTable);
-                
-                return dataTable;
-            }
+            return GetDataTableFromCsv(path, isFirstRowHeader, null);
         }
 
     }
