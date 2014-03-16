@@ -32,17 +32,78 @@ public class Query3 {
 		List<List<Row>> loopDataFilteredList = new ArrayList<List<Row>>(6);
 		List<Row> newList;
 		List<Row> listRow;
-		for (int i = 0; i < 6; i++) {
+		for (int rushHour = 0; rushHour < 6; rushHour++) {
 			newList = new ArrayList<Row>();
-			loopDataFilteredList.add(i, newList);
+			loopDataFilteredList.add(rushHour, newList);
 		}
+
+		//		// Query rows for specific rush hours and days of week, and create a List of 6 Lists
+		//		// holding all of the rush-hour/day-of-week combinations.
+		//		for (Row stationRow : stationID_lengthMidList) {
+		//			String cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
+		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
+		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 7 AND \"StartHour\" < 9 LIMIT 100000;";
+		//			ResultSet loopDataResults = session.execute(cqlQueryLoopData);
+		//			for (Row row : loopDataResults) {
+		//				listRow = loopDataFilteredList.remove(0);
+		//				listRow.add(row);
+		//				loopDataFilteredList.add(0, listRow);
+		//			}
+		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
+		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
+		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 7 AND \"StartHour\" < 9 LIMIT 100000;";
+		//			loopDataResults = session.execute(cqlQueryLoopData);
+		//			for (Row row : loopDataResults) {
+		//				listRow = loopDataFilteredList.remove(1);
+		//				listRow.add(row);
+		//				loopDataFilteredList.add(1, listRow);
+		//			}
+		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
+		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
+		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 7 AND \"StartHour\" < 9 LIMIT 100000;";
+		//			loopDataResults = session.execute(cqlQueryLoopData);
+		//			for (Row row : loopDataResults) {
+		//				listRow = loopDataFilteredList.remove(2);
+		//				listRow.add(row);
+		//				loopDataFilteredList.add(2, listRow);
+		//			}
+		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
+		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
+		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 16 AND \"StartHour\" < 18 LIMIT 100000;";
+		//			loopDataResults = session.execute(cqlQueryLoopData);
+		//			for (Row row : loopDataResults) {
+		//				listRow = loopDataFilteredList.remove(3);
+		//				listRow.add(row);
+		//				loopDataFilteredList.add(3, listRow);
+		//			}
+		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
+		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
+		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 16 AND \"StartHour\" < 18 LIMIT 100000;";
+		//			loopDataResults = session.execute(cqlQueryLoopData);
+		//			for (Row row : loopDataResults) {
+		//				listRow = loopDataFilteredList.remove(4);
+		//				listRow.add(row);
+		//				loopDataFilteredList.add(4, listRow);
+		//			}
+		//			cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
+		//			 + " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
+		//			 + stationRow.getInt(0) + " AND \"StartHour\" >= 16 AND \"StartHour\" < 18 LIMIT 100000;";
+		//			loopDataResults = session.execute(cqlQueryLoopData);
+		//			for (Row row : loopDataResults) {
+		//				listRow = loopDataFilteredList.remove(5);
+		//				listRow.add(row);
+		//				loopDataFilteredList.add(5, listRow);
+		//			}
+		//		}
+
 		for (Row stationRow : stationID_lengthMidList) {
-			String cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\""
-					+ " FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " + stationRow.getInt(0) + " LIMIT 100000;";
+			String cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
+					+ " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
+					+ stationRow.getInt(0) + " LIMIT 1000000;";
 			ResultSet loopDataResults = session.execute(cqlQueryLoopData);
 
-			// Filter rows for specific rush hours and days of week, and create a List of 6 Lists
-			// holding all of the rush-hour/day-of-week combinations.
+			// Filter rows for specific rush hours (AM/PM and day of week), and create a List of 6 Lists
+			// holding all of the AM-PM/day-of-week combinations.
 			for (Row row : loopDataResults) {
 				if (row.getInt(1) >= 7 && row.getInt(1) < 9) {
 					if (row.getString(3).equals("Tuesday")) {
@@ -80,26 +141,22 @@ public class Query3 {
 				}
 			}
 		}
-		//System.out.println(loopDataFilteredList.get(2).get(0));
 
 		// Calculate and print average travel times for each of the 6 time periods of interest.
 		List<Double> avgTravelTimes = new ArrayList<Double>(6);
 		Double periodTravelTimeSum;
 		Integer periodTravelTimeCount;
 		int periodRowStationID;
-		for (int i = 0; i < 6; i++) {
+		for (int rushHour = 0; rushHour < 6; rushHour++) {
 			periodTravelTimeSum = 0.0;
 			periodTravelTimeCount = 0;
-			for (Row periodRow : loopDataFilteredList.get(i)) {
-				//System.out.println(loopDataFilteredList.get(i));
-				//System.out.println(periodRow);
-				periodRowStationID = periodRow.getInt(0);
-				//System.out.println(stationID_lengthMidList);
+			for (Row rushHourRow : loopDataFilteredList.get(rushHour)) {
+				periodRowStationID = rushHourRow.getInt(0);
 				for (Row stationRow : stationID_lengthMidList) {
-					//System.out.println(stationRow.getInt(0) + " " + periodRowStationID + " " + periodRow.getInt(4));
+					// Find the corresponding LengthMid in the stationID list
 					if (stationRow.getInt(0) == periodRowStationID) {
-						if (periodRow.getInt(4) != 0) {
-							periodTravelTimeSum += (stationRow.getDouble(1) / (double)periodRow.getInt(4));
+						if (rushHourRow.getInt(4) != 0) {
+							periodTravelTimeSum += (stationRow.getDouble(1) / (double)rushHourRow.getInt(4));
 							periodTravelTimeCount += 1;
 						}
 						break;
@@ -107,10 +164,10 @@ public class Query3 {
 				}
 			}
 			if (periodTravelTimeCount != 0)
-				avgTravelTimes.add(i, periodTravelTimeSum / (double)periodTravelTimeCount);
+				avgTravelTimes.add(rushHour, periodTravelTimeSum / (double)periodTravelTimeCount);
 			else
-				avgTravelTimes.add(i, 0.0);
-			switch (i) {
+				avgTravelTimes.add(rushHour, 0.0);
+			switch (rushHour) {
 			case 0:  System.out.println("Tuesday AM rush:  " + avgTravelTimes.get(0) * 60 + " minutes");
 			break;
 			case 1:  System.out.println("Wednesday AM rush:  " + avgTravelTimes.get(1) * 60 + " minutes");
@@ -141,5 +198,41 @@ public class Query3 {
 		String cqlQueryStations = "SELECT \"StationID\", \"LengthMid\" FROM \"CloudDataMgt\".\"Stations\""
 				+ " WHERE \"ShortDirection\" = 'N' LIMIT 1000000000;";
 		return session.execute(cqlQueryStations);
+	}
+	
+	private class FourTuple {
+		private int hour, minute, second;
+		String ts;
+		
+		FourTuple(int hour, int minute, int second, String ts) {
+			this.hour = hour;
+			this.minute = minute;
+			this.second = second;
+			this.ts = ts;
+		}
+		
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FourTuple)) return false;
+        FourTuple fourTuple = (FourTuple) o;
+        return hour == fourTuple.hour && minute == fourTuple.minute && second == fourTuple.second && ts == fourTuple.ts;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = hour;
+        result = result * 5000 + 60 * minute + second;
+        int monthDate = Integer.parseInt(ts.substring(9, 10));
+        result = result + 150000 + monthDate;
+        if (ts.substring(5, 7).equals("Sep"))
+        	result *= 2;
+        else if (ts.substring(5, 7).equals("Oct"))
+        	result *= 3;
+        else
+        	result *= 5;
+        return result;
+    }
+		
 	}
 }
