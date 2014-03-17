@@ -6,8 +6,9 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
 /**
- * Hector sucks!
- * But maybe DataStax is better!
+ * Code: unused
+ * Could be used as the Global class to call the four queries
+ * currently not implemented.
  */
 public class App
 {
