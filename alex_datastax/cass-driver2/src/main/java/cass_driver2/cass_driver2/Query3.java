@@ -161,17 +161,17 @@ public class Query3 {
 			else
 				avgTravelTimes.add(rushHour, 0.0);
 			switch (rushHour) {
-			case 0:  System.out.println("Tuesday AM rush:  " + avgTravelTimes.get(0) * 60 + " minutes");
+			case 0:  System.out.println("Tuesday AM rush:  " + avgTravelTimes.get(0) * 420 + " minutes");
 			break;
-			case 1:  System.out.println("Wednesday AM rush:  " + avgTravelTimes.get(1) * 60 + " minutes");
+			case 1:  System.out.println("Wednesday AM rush:  " + avgTravelTimes.get(1) * 420 + " minutes");
 			break;
-			case 2:  System.out.println("Thursday AM rush:  " + avgTravelTimes.get(2) * 60 + " minutes");
+			case 2:  System.out.println("Thursday AM rush:  " + avgTravelTimes.get(2) * 420 + " minutes");
 			break;
-			case 3:  System.out.println("Tuesday PM rush:  " + avgTravelTimes.get(3) * 60 + " minutes");
+			case 3:  System.out.println("Tuesday PM rush:  " + avgTravelTimes.get(3) * 420 + " minutes");
 			break;
-			case 4:  System.out.println("Wednesday PM rush:  " + avgTravelTimes.get(4) * 60 + " minutes");
+			case 4:  System.out.println("Wednesday PM rush:  " + avgTravelTimes.get(4) * 420 + " minutes");
 			break;
-			case 5:  System.out.println("Thursday PM rush:  " + avgTravelTimes.get(5) * 60 + " minutes");
+			case 5:  System.out.println("Thursday PM rush:  " + avgTravelTimes.get(5) * 420 + " minutes");
 			break;
 			default:  System.out.println("This case should not be reached.");
 			break;
