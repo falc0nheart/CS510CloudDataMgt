@@ -11,6 +11,7 @@ import java.util.*;
 public class Query3 {
 
 	public static void main(String[] args) {
+		long startTime = System.nanoTime();
 		Cluster cluster = Cluster.builder()
 				.addContactPoints("54.186.36.251")
 				.build();
@@ -176,6 +177,11 @@ public class Query3 {
 			break;
 			}
 		}
+		long elapsedTime = System.nanoTime() - startTime;
+    	double seconds = (double)elapsedTime / 1000000000.0;
+    	System.out.println("Query 3 - Done | Elapsed Time in " + seconds + " seconds");
+    	session.close(); // finish session
+    	cluster.close(); // finish cluster connection
 		System.exit(0);
 	}
 
