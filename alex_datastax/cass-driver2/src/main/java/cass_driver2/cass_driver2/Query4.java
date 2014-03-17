@@ -34,14 +34,16 @@ public class Query4 {
     		ResultSet results2 = session.execute(cqlQuery2);
     		
     		int station1SpeedSize = 0; // we'll have to loop through the ResultSet for size
-    		int station2SpeedSize = 0; // we'll have to loop through the ResultSet for size
     		int station1SpeedSum = 0;
-    		int station2SpeedSum = 0;
     		
+    		int station2SpeedSize = 0; // we'll have to loop through the ResultSet for size
+    		int station2SpeedSum = 0;
+    		// Loop through Station1
     		for(Row row2 : results) {
     			station1SpeedSum += row2.getInt(0);
     			station1SpeedSize++;
     		} // for
+    		// Loop through Station2
     		for(Row row2 : results2) {
     			station1SpeedSum += row2.getInt(0);
     			station2SpeedSize++;
@@ -58,6 +60,9 @@ public class Query4 {
     		
     		int station1AvgSpeed = station1SpeedSum / station1SpeedSize;
     		int station2AvgSpeed = station2SpeedSum / station2SpeedSize;
+    		int totalAvgSpeed = (station1AvgSpeed + station2AvgSpeed) / 2;
+    		int travelTime = lengthMidComb / totalAvgSpeed;
+    		System.out.println ("Station1: " + castedStation + " Station2: " + castedDownstream + " Travel time: " + travelTime);
     	} // for
     	long elapsedTime = System.nanoTime() - startTime;
     	double seconds = (double)elapsedTime / 1000000000.0;
