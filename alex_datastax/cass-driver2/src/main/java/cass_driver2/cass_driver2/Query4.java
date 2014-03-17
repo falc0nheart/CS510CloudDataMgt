@@ -47,7 +47,7 @@ public class Query4 {
     				totalAvgSpeed = 1;
     			}
     			double travelTime = lengthMidComb / totalAvgSpeed;
-    			System.out.println ("Station1: " + castedStation + " Station2: 0    | Travel time: " + travelTime + " in minutes  [downstream was zero]");
+    			System.out.println ("Station1: " + castedStation + " Station2: 0    | Travel time: " + (travelTime*60) + " in minutes  [downstream was zero]");
     		} // if
     		// if we DO have a downstreamStationID
     		else {
@@ -91,7 +91,7 @@ public class Query4 {
     				totalAvgSpeed = 1;
     			}
     			double travelTime = lengthMidComb / totalAvgSpeed;
-    			System.out.println ("Station1: " + castedStation + " Station2: " + castedDownstream + " | Travel time: " + travelTime + " in minutes");
+    			System.out.println ("Station1: " + castedStation + " Station2: " + castedDownstream + " | Travel time: " + (travelTime * 60) + " in minutes");
     		} // else
     	} // for
     	long elapsedTime = System.nanoTime() - startTime;
