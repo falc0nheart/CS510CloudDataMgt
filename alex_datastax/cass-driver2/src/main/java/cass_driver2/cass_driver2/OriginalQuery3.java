@@ -1,5 +1,10 @@
 package cass_driver2.cass_driver2;
 
+/*
+ * Code: depreciated
+ * View the updated code at Query3.java
+ */
+ */
 
 import com.datastax.driver.core.*;
 
