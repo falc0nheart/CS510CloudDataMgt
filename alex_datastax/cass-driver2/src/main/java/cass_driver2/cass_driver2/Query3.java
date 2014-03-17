@@ -201,28 +201,28 @@ public class Query3 {
 			this.ts = ts;
 		}
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (!(o instanceof FourTuple)) return false;
-			FourTuple fourTuple = (FourTuple) o;
-			return hour == fourTuple.hour && minute == fourTuple.minute && second == fourTuple.second && ts == fourTuple.ts;
-		}
-
-		@Override
-		public int hashCode() {
-			int result = hour;
-			result = result * 5000 + 60 * minute + second;
-			int monthDate = Integer.parseInt(ts.substring(9, 10));
-			result = result + 150000 + monthDate;
-			if (ts.substring(5, 7).equals("Sep"))
-				result *= 2;
-			else if (ts.substring(5, 7).equals("Oct"))
-				result *= 3;
-			else
-				result *= 5;
-			return result;
-		}
+//		@Override
+//		public boolean equals(Object o) {
+//			if (this == o) return true;
+//			if (!(o instanceof FourTuple)) return false;
+//			FourTuple fourTuple = (FourTuple) o;
+//			return hour == fourTuple.hour && minute == fourTuple.minute && second == fourTuple.second && ts == fourTuple.ts;
+//		}
+//
+//		@Override
+//		public int hashCode() {
+//			int result = hour;
+//			result = result * 5000 + 60 * minute + second;
+//			int monthDate = Integer.parseInt(ts.substring(9, 10));
+//			result = result + 150000 + monthDate;
+//			if (ts.substring(5, 7).equals("Sep"))
+//				result *= 2;
+//			else if (ts.substring(5, 7).equals("Oct"))
+//				result *= 3;
+//			else
+//				result *= 5;
+//			return result;
+//		}
 
 	}
 }
