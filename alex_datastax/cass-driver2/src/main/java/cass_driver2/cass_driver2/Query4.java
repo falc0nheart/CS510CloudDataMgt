@@ -39,11 +39,11 @@ public class Query4 {
     		int station2SpeedSum = 0;
     		
     		for(Row row2 : results) {
-    			// loop through result1
+    			station1SpeedSum += row2.getInt(0);
     			station1SpeedSize++;
     		} // for
     		for(Row row2 : results2) {
-    			// loop through result2
+    			station1SpeedSum += row2.getInt(0);
     			station2SpeedSize++;
     		} // for
     		
@@ -56,6 +56,8 @@ public class Query4 {
     		} // for
     		int lengthMidComb = (row.getInt(1) + downstreamLength) / 2;
     		
+    		int station1AvgSpeed = station1SpeedSum / station1SpeedSize;
+    		int station2AvgSpeed = station2SpeedSum / station2SpeedSize;
     	} // for
     	long elapsedTime = System.nanoTime() - startTime;
     	double seconds = (double)elapsedTime / 1000000000.0;
