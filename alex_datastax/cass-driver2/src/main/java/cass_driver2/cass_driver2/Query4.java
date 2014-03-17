@@ -25,8 +25,8 @@ public class Query4 {
     		String cqlQuery = "SELECT \"Speed\", \"StartHour\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " 
     		+ castedStation + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000;"; 
     		ResultSet results = session.execute(cqlQuery);
-    		// @todo: need to see if downstreamStationID = 0, just compute the one station
     		int castedDownstream = row.getInt(2);
+    		// if downstreamStationID = 0
     		if (castedDownstream == 0) {
     			int station1SpeedSize = 1; // we'll have to loop through the ResultSet for size
     			int station1SpeedSum = 0;
@@ -49,6 +49,7 @@ public class Query4 {
     			int travelTime = lengthMidComb / totalAvgSpeed;
     			System.out.println ("Station1: " + castedStation + " Station2: [downstream was zero] Travel time: " + travelTime);
     		} // if
+    		// if we DO have a downstreamStationID
     		else {
     			String cqlQuery2 = "SELECT \"Speed\", \"StartHour\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " 
     					+ castedDownstream + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000;"; 
