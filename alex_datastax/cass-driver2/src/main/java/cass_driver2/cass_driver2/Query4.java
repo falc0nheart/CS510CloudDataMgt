@@ -1,6 +1,7 @@
 package cass_driver2.cass_driver2;
 
 import com.datastax.driver.core.*;
+
 import java.util.*;
 
 /*
@@ -30,9 +31,30 @@ public class Query4 {
     		int castedDownstream = row.getInt(2);
     		String cqlQuery2 = "SELECT \"Speed\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " 
     		+ castedDownstream + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' AND \"StartHour\" = 8 LIMIT 2500;";
-    		ResultSet results2 = session.execute(cqlQuery);
+    		ResultSet results2 = session.execute(cqlQuery2);
+    		
     		int station1SpeedSize = 0; // we'll have to loop through the ResultSet for size
     		int station2SpeedSize = 0; // we'll have to loop through the ResultSet for size
+    		int station1SpeedSum = 0;
+    		int station2SpeedSum = 0;
+    		
+    		for(Row row2 : results) {
+    			// loop through result1
+    			station1SpeedSize++;
+    		} // for
+    		for(Row row2 : results2) {
+    			// loop through result2
+    			station2SpeedSize++;
+    		} // for
+    		
+    		// Do averages here
+    		String cqlQuery3 = "SELECT \"LengthMid\" FROM \"CloudDataMgt\".\"Station\" WHERE \"StationID\" = " + castedDownstream;
+    		ResultSet results3 = session.execute(cqlQuery3);
+    		int downstreamLength = 0;
+    		for(Row row2 : results3) {
+    			downstreamLength = row2.getInt(0); // need to get the downstream lengthMid
+    		} // for
+    		int lengthMidComb = (row.getInt(1) + downstreamLength) / 2;
     		
     	} // for
     	long elapsedTime = System.nanoTime() - startTime;
