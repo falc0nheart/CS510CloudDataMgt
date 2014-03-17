@@ -29,34 +29,28 @@ public class Query3 {
 		for (Row row : stationID_lengthMidList) {
 			highwayLength += row.getDouble(1);
 		}
-		System.out.println("\nTotal NB 205 length:  " + highwayLength + " miles\n");
+		System.out.println("\nOut of curiosity:  total NB 205 length:  " + highwayLength + " miles\n");
 
 		// Query "LoopData" columnFamily, for each relevant (NB) StationID.
-		List<List<Row>> loopDataFilteredList = new ArrayList<List<Row>>(6);
-		List<Row> newList;
 		HashMap<FourTuple, List<Row>> newMap;
 		FourTuple timeSignature;
 		HashMap<FourTuple, List<Row>> timeSigValueMap;
 		List<Row> timeSigRowList;
-		for (int rushHour = 0; rushHour < 6; rushHour++) {
-			newList = new ArrayList<Row>();
-			loopDataFilteredList.add(rushHour, newList);
-		}
 		List<HashMap<FourTuple, List<Row>>> loopDataMapList = new ArrayList<HashMap<FourTuple, List<Row>>>(6);
 		for (int rushHour = 0; rushHour < 6; rushHour++) {
 			newMap = new HashMap<FourTuple, List<Row>>();
 			loopDataMapList.add(rushHour, newMap);
 		}
-		Map<FourTuple, Double> travelTimesMap;
 
 		for (Row stationRow : stationID_lengthMidList) {
 			String cqlQueryLoopData = "SELECT \"StationID\", \"StartHour\", \"StartMinute\", \"DayOfWeek\", \"Speed\","
 					+ " \"StartSecond\", \"StartDate\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = "
-					+ stationRow.getInt(0) + " LIMIT 100000;";
+					+ stationRow.getInt(0) + " LIMIT 20000000;";
 			ResultSet loopDataResults = session.execute(cqlQueryLoopData);
 
-			// Filter rows for specific rush hours (AM/PM and day of week), and create a List of 6 Lists
-			// holding all of the AM-PM/day-of-week combinations.
+			// Filter rows for specific rush hours (combo of AM/PM and day of week), and create a List of 6 Hashmaps (one for each rush hour)
+			// each holding a mapping from an instant's "time signature" to a list of all LoopData rows with that signature.
+			// This is in order to group all readings from the same instant in time together, to calculate travel time for the whole NB 205.
 			for (Row row : loopDataResults) {
 				if (row.getInt(1) >= 7 && row.getInt(1) < 9) {
 					if (row.getString(3).equals("Tuesday")) {
@@ -135,53 +129,50 @@ public class Query3 {
 		for (int rushHour = 0; rushHour < 6; rushHour++) {
 			periodTravelTimeSum = 0.0;
 			periodTravelTimeCount = 0;
-  		periodMap = loopDataMapList.get(rushHour);
+			periodMap = loopDataMapList.get(rushHour);
 			for (Map.Entry<FourTuple, List<Row>> mapEntry : periodMap.entrySet()) {
-				instantTravelTimeSum = 0.0;  /////
-				travelTimesMap = new HashMap<FourTuple, Double>();////
+				instantTravelTimeSum = 0.0;
 				for (Row rushHourRow : mapEntry.getValue()) {
 					periodRowStationID = rushHourRow.getInt(0);
 					for (Row stationRow : stationID_lengthMidList) {
 						// Find the corresponding LengthMid in the stationID list
 						if (stationRow.getInt(0) == periodRowStationID) {
-							if (rushHourRow.getInt(4) != 0) {
+							if (rushHourRow.getInt(4) != 0)
 								instantTravelTimeSum += (stationRow.getDouble(1) / (double)rushHourRow.getInt(4));
-								/////travelTimesMap.get(mapEntry.getKey());
-							}
 							break;
 						}
 					}
 				}
-				travelTimesMap.put(mapEntry.getKey(), instantTravelTimeSum);////
-			  periodTravelTimeSum += (travelTimesMap.get(mapEntry.getKey()));////
-				periodTravelTimeCount += 1;////
+				periodTravelTimeSum += instantTravelTimeSum;
+				periodTravelTimeCount += 1;
 			}
-			if (periodTravelTimeCount != 0)
+			if (periodTravelTimeCount != 0) {
 				avgTravelTimes.add(rushHour, periodTravelTimeSum / (double)periodTravelTimeCount);
+			}
 			else
 				avgTravelTimes.add(rushHour, 0.0);
 			switch (rushHour) {
-			case 0:  System.out.println("Tuesday AM rush:  " + avgTravelTimes.get(0) * 420 + " minutes");
+			case 0:  System.out.println("Tuesday AM rush:  " + avgTravelTimes.get(0) * 60 + " minutes");
 			break;
-			case 1:  System.out.println("Wednesday AM rush:  " + avgTravelTimes.get(1) * 420 + " minutes");
+			case 1:  System.out.println("Wednesday AM rush:  " + avgTravelTimes.get(1) * 60 + " minutes");
 			break;
-			case 2:  System.out.println("Thursday AM rush:  " + avgTravelTimes.get(2) * 420 + " minutes");
+			case 2:  System.out.println("Thursday AM rush:  " + avgTravelTimes.get(2) * 60 + " minutes");
 			break;
-			case 3:  System.out.println("Tuesday PM rush:  " + avgTravelTimes.get(3) * 420 + " minutes");
+			case 3:  System.out.println("Tuesday PM rush:  " + avgTravelTimes.get(3) * 60 + " minutes");
 			break;
-			case 4:  System.out.println("Wednesday PM rush:  " + avgTravelTimes.get(4) * 420 + " minutes");
+			case 4:  System.out.println("Wednesday PM rush:  " + avgTravelTimes.get(4) * 60 + " minutes");
 			break;
-			case 5:  System.out.println("Thursday PM rush:  " + avgTravelTimes.get(5) * 420 + " minutes");
+			case 5:  System.out.println("Thursday PM rush:  " + avgTravelTimes.get(5) * 60 + " minutes");
 			break;
 			default:  System.out.println("This case should not be reached.");
 			break;
 			}
 		}
 		long elapsedTime = System.nanoTime() - startTime;
-    	double seconds = (double)elapsedTime / 1000000000.0;
-    	System.out.println("Query 3 - Done | Elapsed Time in " + seconds + " seconds");
-    	session.close(); // finish session
-    	cluster.close(); // finish cluster connection
+		double seconds = (double)elapsedTime / 1000000000.0;
+		System.out.println("\nQuery 3 - Done | Elapsed Time in " + seconds + " seconds");
+		session.close(); // finish session
+		cluster.close(); // finish cluster connection
 		System.exit(0);
 	}
 
@@ -197,10 +188,10 @@ public class Query3 {
 				+ " WHERE \"ShortDirection\" = 'N' LIMIT 1000000000;";
 		return session.execute(cqlQueryStations);
 	}
-
+	
 	private static class FourTuple {
 		private int hour, minute, second;
-		String ts;
+		private String ts;
 
 		FourTuple(int hour, int minute, int second, String ts) {
 			this.hour = hour;
@@ -209,28 +200,30 @@ public class Query3 {
 			this.ts = ts;
 		}
 
-//		@Override
-//		public boolean equals(Object o) {
-//			if (this == o) return true;
-//			if (!(o instanceof FourTuple)) return false;
-//			FourTuple fourTuple = (FourTuple) o;
-//			return hour == fourTuple.hour && minute == fourTuple.minute && second == fourTuple.second && ts == fourTuple.ts;
-//		}
-//
-//		@Override
-//		public int hashCode() {
-//			int result = hour;
-//			result = result * 5000 + 60 * minute + second;
-//			int monthDate = Integer.parseInt(ts.substring(9, 10));
-//			result = result + 150000 + monthDate;
-//			if (ts.substring(5, 7).equals("Sep"))
-//				result *= 2;
-//			else if (ts.substring(5, 7).equals("Oct"))
-//				result *= 3;
-//			else
-//				result *= 5;
-//			return result;
-//		}
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null)return false;
+			if (getClass() != o.getClass()) return false;
+			FourTuple other = (FourTuple) o;
+			if (hour != other.hour || minute != other.minute || second != other.second || !ts.equals(other.ts))
+				return false;
+			return true;
+		}
 
+		@Override
+		public int hashCode() {
+			int result = hour;
+			result = result * 5000 + 60 * minute + second;
+			int monthDate = Integer.parseInt(ts.substring(9, 10));
+			result = result + 150000 + monthDate;
+			if (ts.substring(5, 7).equals("Sep"))
+				result *= 2;
+			else if (ts.substring(5, 7).equals("Oct"))
+				result *= 3;
+			else
+				result *= 5;
+			return result;
+		}
 	}
 }
