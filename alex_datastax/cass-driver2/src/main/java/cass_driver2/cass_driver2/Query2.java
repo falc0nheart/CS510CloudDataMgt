@@ -75,6 +75,8 @@ public class Query2 {
     	long elapsedTime = System.nanoTime() - startTime;
     	double seconds = (double)elapsedTime / 1000000000.0;
     	System.out.println("Query 2 - Done | Elapsed Time in " + seconds + " seconds");
+    	session.close(); // finish session
+    	cluster.close(); // finish cluster connection
     	System.exit(0);
 	}
 	
