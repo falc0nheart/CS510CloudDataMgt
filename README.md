@@ -6,9 +6,9 @@ Team project regarding Freeway data from Portland State PORTAL.
 * Couse Page: datalab.cs.pdx.edu/education/clouddbms-win2014
 
 ## Team Members
-Jeff Otis
-Jim Miller
-Zachary Prior
-Alex Laughnan
-Khang Hoang
-Peter Keomanivanh
+* Jeff Otis
+* Jim Miller
+* Zachary Prior
+* Alex Laughnan
+* Khang Hoang
+* Peter Keomanivanh
