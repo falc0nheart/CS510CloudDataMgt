@@ -23,7 +23,7 @@ public class Query4 {
     		// More queries
     		int castedStation = row.getInt(0);
     		String cqlQuery = "SELECT \"Speed\", \"StartHour\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " 
-    		+ castedStation + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000;"; 
+    		+ castedStation + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000000;"; 
     		ResultSet results = session.execute(cqlQuery);
     		int castedDownstream = row.getInt(2);
     		// if downstreamStationID = 0
@@ -40,19 +40,19 @@ public class Query4 {
     			} // for
     		
     			// Do averages here
-    			int lengthMidComb = (int)(row.getDouble(1))/ 2;
+    			double lengthMidComb = (row.getDouble(1))/ 2;
     			int station1AvgSpeed = station1SpeedSum / station1SpeedSize;
-    			int totalAvgSpeed = station1AvgSpeed;
+    			double totalAvgSpeed = station1AvgSpeed;
     			if (totalAvgSpeed < 1) {
     				totalAvgSpeed = 1;
     			}
-    			int travelTime = lengthMidComb / totalAvgSpeed;
-    			System.out.println ("Station1: " + castedStation + " Station2: [downstream was zero] Travel time: " + travelTime);
+    			double travelTime = lengthMidComb / totalAvgSpeed;
+    			System.out.println ("Station1: " + castedStation + " Station2: 0 Travel time: " + travelTime + " in minutes  [downstream was zero]");
     		} // if
     		// if we DO have a downstreamStationID
     		else {
     			String cqlQuery2 = "SELECT \"Speed\", \"StartHour\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " 
-    					+ castedDownstream + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000;"; 
+    					+ castedDownstream + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000000;"; 
     			ResultSet results2 = session.execute(cqlQuery2);
     		
     			int station1SpeedSize = 1; // we'll have to loop through the ResultSet for size
@@ -78,11 +78,11 @@ public class Query4 {
     			// Do averages here
     			String cqlQuery3 = "SELECT \"LengthMid\" FROM \"CloudDataMgt\".\"Stations\" WHERE \"StationID\" = " + castedDownstream;
     			ResultSet results3 = session.execute(cqlQuery3);
-    			int downstreamLength = 0;
+    			double downstreamLength = 0;
     			for(Row row2 : results3) {
-    				downstreamLength = (int)row2.getDouble(0); // need to get the downstream lengthMid
+    				downstreamLength = row2.getDouble(0); // need to get the downstream lengthMid
     			} // for
-    			int lengthMidComb = (int)(row.getDouble(1) + downstreamLength) / 2;
+    			double lengthMidComb = (row.getDouble(1) + downstreamLength) / 2;
 
     			int station1AvgSpeed = station1SpeedSum / station1SpeedSize;
     			int station2AvgSpeed = station2SpeedSum / station2SpeedSize;
@@ -90,8 +90,8 @@ public class Query4 {
     			if (totalAvgSpeed < 1) {
     				totalAvgSpeed = 1;
     			}
-    			int travelTime = lengthMidComb / totalAvgSpeed;
-    			System.out.println ("Station1: " + castedStation + " Station2: " + castedDownstream + " Travel time: " + travelTime);
+    			double travelTime = lengthMidComb / totalAvgSpeed;
+    			System.out.println ("Station1: " + castedStation + " Station2: " + castedDownstream + " Travel time: " + travelTime + " in minutes");
     		} // else
     	} // for
     	long elapsedTime = System.nanoTime() - startTime;
