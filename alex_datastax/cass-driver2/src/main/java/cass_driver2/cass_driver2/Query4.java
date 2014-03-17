@@ -23,16 +23,35 @@ public class Query4 {
     		// More queries
     		int castedStation = row.getInt(0);
     		String cqlQuery = "SELECT \"Speed\", \"StartHour\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " 
-    		+ castedStation + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 500;"; 
+    		+ castedStation + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000;"; 
     		ResultSet results = session.execute(cqlQuery);
     		// @todo: need to see if downstreamStationID = 0, just compute the one station
     		int castedDownstream = row.getInt(2);
     		if (castedDownstream == 0) {
-    			System.out.println ("This has a zero downstream ID");
+    			int station1SpeedSize = 1; // we'll have to loop through the ResultSet for size
+    			int station1SpeedSum = 0;
+ 
+    			// Loop through Station1
+    			for(Row row2 : results) {
+    				if (row2.getInt(1) == 8) {
+    					station1SpeedSum += row2.getInt(0);
+        				station1SpeedSize++;
+    				}
+    			} // for
+    		
+    			// Do averages here
+    			int lengthMidComb = (int)(row.getDouble(1))/ 2;
+    			int station1AvgSpeed = station1SpeedSum / station1SpeedSize;
+    			int totalAvgSpeed = station1AvgSpeed;
+    			if (totalAvgSpeed < 1) {
+    				totalAvgSpeed = 1;
+    			}
+    			int travelTime = lengthMidComb / totalAvgSpeed;
+    			System.out.println ("Station1: " + castedStation + " Station2: [downstream was zero] Travel time: " + travelTime);
     		} // if
     		else {
     			String cqlQuery2 = "SELECT \"Speed\", \"StartHour\" FROM \"CloudDataMgt\".\"LoopData\" WHERE \"StationID\" = " 
-    					+ castedDownstream + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 500;"; 
+    					+ castedDownstream + " AND \"StartDate\" > '2011-09-22 00:00' AND \"StartDate\" < '2011-09-23 23:59' LIMIT 125000;"; 
     			ResultSet results2 = session.execute(cqlQuery2);
     		
     			int station1SpeedSize = 1; // we'll have to loop through the ResultSet for size
